@@ -6,7 +6,7 @@
     "invoice", "home", "php", "pdf"
   ],
   "homepage": "https://github.com/shabuninil/home_invoice",
-  "license": "GNU3",
+  "license": "MIT",
   "authors": [
     {
       "name": "Igor Shabunin",
