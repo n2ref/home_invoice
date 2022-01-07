@@ -1,0 +1,31 @@
+{
+  "name": "shabuninil/home_invoice",
+  "type": "library",
+  "description": "Получение и обработка данных из PDF файла жировок",
+  "keywords": [
+    "invoice", "home", "php", "pdf"
+  ],
+  "homepage": "https://github.com/shabuninil/home_invoice",
+  "license": "GNU3",
+  "authors": [
+    {
+      "name": "Igor Shabunin",
+      "email": "shabuninil24@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7.4.0",
+    "smalot/pdfparser": "*",
+    "influxdata/influxdb-client-php": ">=1.11.0",
+    "ext-iconv" : "*",
+    "ext-mbstring" : "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "HomeInvoice\\": "src/"
+    }
+  }
+}
