@@ -18,6 +18,9 @@ PHP скрипт решает две задачи:
 
 Для формирования графиков, как на скриншотах, можно использовать готовую JSON модель [grafana.InfluxDb2.json](docs/grafana.InfluxDb2.json)
 
+```
+composer require shabuninil/home_invoice
+```
 
 ## Примеры
 
