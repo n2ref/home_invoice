@@ -42,7 +42,14 @@ class Transform {
      */
     public function getSimple(): array {
 
+        $date_invoice = "{$this->invoice_data['year']}-{$this->invoice_data['month']}-01 00:00:00";
+
         return [
+            ['name' => 'date_invoice',           'value' => $date_invoice,                                 'title' => 'Дата извещения'],
+            ['name' => 'date_created',           'value' => $this->invoice_data['date_created'],           'title' => 'Дата создания'],
+            ['name' => 'payer_name',             'value' => $this->invoice_data['payer_name'],             'title' => 'Плательщик'],
+            ['name' => 'address',                'value' => $this->invoice_data['address'],                'title' => 'Адрес помещения'],
+            ['name' => 'personal_account',       'value' => $this->invoice_data['personal_account'],       'title' => 'Лицевой счет'],
             ['name' => 'total_accrued',          'value' => $this->invoice_data['total_accrued'],          'title' => 'Итого начислено'],
             ['name' => 'total_price',            'value' => $this->invoice_data['total_price'],            'title' => 'Итого к оплате'],
             ['name' => 'cold_water_count',       'value' => $this->invoice_data['cold_water_count'],       'title' => 'Показания приборов расхода холодной воды (куб. м)'],
