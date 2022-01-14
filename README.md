@@ -9,14 +9,18 @@ PHP скрипт решает две задачи:
 ### Результат показанный в Grafana
 
 ![img1](docs/invoice1.png)
-
 ![img2](docs/invoice2.png)
+![img2](docs/invoice3.png)
 
 Для показа подобных графиков необходимо использовать Grafana + (Influx, Mysql или другие базы данных).\
 [grafana.com](https://grafana.com)\
 [influxdata.com](https://www.influxdata.com)
 
-Для формирования графиков, как на скриншотах, можно использовать готовую JSON модель [grafana.InfluxDb2.json](docs/grafana.InfluxDb2.json)
+Для формирования графиков, как на скриншотах, можно использовать готовые JSON модели: 
+1. [grafana.Mysql.json](docs/grafana.Mysql.json)
+2. [grafana.InfluxDb2.json](docs/grafana.InfluxDb2.json)
+
+А так же использовать схему [mysql.sql](docs/mysql.sql) для базы данных.
 
 ```
 composer require shabuninil/home_invoice

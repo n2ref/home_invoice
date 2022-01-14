@@ -186,7 +186,7 @@ class Parser {
      */
     public function getTotalAccrued(string $text): string {
 
-        preg_match('~от[\s]([\d]+\.[\d]+\.[\d]+ [\d]+:[\d]+:[\d]+)~imu', $text, $matches);
+        preg_match('~Всего\s*начислено\s*[\d\.]+\s*[\d\.\-]+\s*[\d\.\-]+\s*([\d\.]+)~muis', $text, $matches);
         return $matches[1] ?? '';
     }
 
