@@ -86,6 +86,7 @@ class Transform {
                         if ( ! empty($row)) {
                             $services[] = [
                                 'title'         => trim($row['title']),
+                                'unit'          => $row['unit'],
                                 'volume'        => (float)($row['volume'] ?? 0.0),
                                 'rate'          => (float)($row['rate'] ?? 0.0),
                                 'accrued'       => (float)($row['accrued'] ?? 0.0),
