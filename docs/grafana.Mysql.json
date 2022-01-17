@@ -22,7 +22,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 19,
-  "iteration": 1642184966053,
+  "iteration": 1642448326383,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -50,7 +50,7 @@
             "mode": "continuous-GrYlRd"
           },
           "custom": {
-            "axisLabel": "",
+            "axisLabel": "руб.",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "bars",
@@ -173,7 +173,7 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
+            "axisLabel": "м3",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "bars",
@@ -308,7 +308,7 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
+            "axisLabel": "руб.",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "bars",
@@ -503,7 +503,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n    i.date_invoice AS \"time\",\n    s.title,\n    s.volume\nFROM invoices AS i\n         JOIN invoices_services AS s ON s.invoice_id = i.id\nWHERE i.address = \"$address\"\n  AND $__timeFilter(i.date_invoice)\nORDER BY i.date_invoice",
+          "rawSql": "SELECT\n    i.date_invoice AS \"time\",\n    s.title,\n    s.volume\nFROM invoices AS i\n    JOIN invoices_services AS s ON s.invoice_id = i.id\nWHERE i.address = \"$address\"\n  AND (s.unit IS NULL OR s.unit != \"м.кв.\")\n  AND $__timeFilter(i.date_invoice)\nORDER BY i.date_invoice",
           "refId": "A",
           "select": [
             [
@@ -550,7 +550,7 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
+            "axisLabel": "руб.",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "bars",
@@ -672,7 +672,7 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
+            "axisLabel": "руб.",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "bars",
@@ -792,9 +792,43 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd"
+            "mode": "thresholds",
+            "seriesBy": "min"
           },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 3,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 2,
           "mappings": [],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -803,8 +837,12 @@
                 "value": null
               },
               {
+                "color": "orange",
+                "value": 1
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 4
               }
             ]
           }
@@ -819,16 +857,14 @@
       },
       "id": 18,
       "options": {
-        "displayMode": "lcd",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "bottom"
         },
-        "showUnfilled": true
+        "tooltip": {
+          "mode": "multi"
+        }
       },
       "pluginVersion": "8.3.3",
       "targets": [
@@ -841,7 +877,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n    i.date_invoice AS \"time\",\r\n    s.title,\r\n    s.volume - (SELECT s2.volume\r\n              FROM invoices AS i2\r\n                       LEFT JOIN invoices_services AS s2 ON s2.invoice_id = i2.id\r\n              WHERE i.address = i2.address\r\n                  AND s.title = s2.title\r\n                  AND i.id != i2.id\r\n              ORDER BY i2.id DESC\r\n              LIMIT 1) AS rate\r\nFROM invoices AS i\r\n         JOIN invoices_services AS s ON s.invoice_id = i.id\r\nWHERE i.address = \"$address\"\r\n    AND  i.id = (SELECT MAX(i2.id)\r\n                    FROM invoices AS i2\r\n                    WHERE i.address = i2.address)\r\nORDER BY i.date_invoice;",
+          "rawSql": "SELECT\r\n    i.date_invoice AS \"time\",\r\n    s.title,\r\n    s.volume - COALESCE((SELECT s2.volume\r\n              FROM invoices AS i2\r\n                  LEFT JOIN invoices_services AS s2 ON s2.invoice_id = i2.id\r\n              WHERE i.address = i2.address\r\n                AND s.title = s2.title\r\n                AND i.date_invoice > i2.date_invoice\r\n                AND i.id != i2.id\r\n              ORDER BY i2.date_invoice DESC\r\n              LIMIT 1), 0) AS volume\r\nFROM invoices AS i\r\n         JOIN invoices_services AS s ON s.invoice_id = i.id\r\nWHERE i.address = \"$address\"\r\n  AND (s.unit IS NULL OR s.unit != \"м.кв.\")\r\nORDER BY i.date_invoice;",
           "refId": "A",
           "select": [
             [
@@ -865,17 +901,17 @@
           ]
         }
       ],
-      "title": "Разница расхода по услугам",
+      "title": "Повышения и понижения расходов по услугам",
       "transformations": [
         {
           "id": "renameByRegex",
           "options": {
-            "regex": "rate\\s*",
+            "regex": "volume\\s*",
             "renamePattern": ""
           }
         }
       ],
-      "type": "bargauge"
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -886,15 +922,57 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd"
+            "mode": "thresholds",
+            "seriesBy": "max"
           },
+          "custom": {
+            "axisLabel": "руб.",
+            "axisPlacement": "left",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "displayName": "руб.",
           "mappings": [],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
               }
             ]
           }
@@ -909,17 +987,14 @@
       },
       "id": 6,
       "options": {
-        "displayMode": "lcd",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "limit": 1,
-          "values": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "bottom"
         },
-        "showUnfilled": true
+        "tooltip": {
+          "mode": "multi"
+        }
       },
       "pluginVersion": "8.3.3",
       "targets": [
@@ -932,7 +1007,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n    i.date_invoice AS \"time\",\n    s.title,\n    s.total - (SELECT s2.total\n               FROM invoices AS i2\n                        LEFT JOIN invoices_services AS s2 ON s2.invoice_id = i2.id\n               WHERE i.address = i2.address\n                       AND s.title = s2.title\n                       AND i.id != i2.id\n               ORDER BY i2.id DESC\n               LIMIT 1) AS total\nFROM invoices AS i\n         JOIN invoices_services AS s ON s.invoice_id = i.id\nWHERE i.address = \"$address\"\n        AND i.id = (SELECT MAX(i2.id)\n                    FROM invoices AS i2\n                    WHERE i.address = i2.address)\nORDER BY i.date_invoice;",
+          "rawSql": "SELECT\n    i.date_invoice AS \"time\",\n    s.title,\n    s.total - COALESCE((SELECT s2.total\n              FROM invoices AS i2\n                  LEFT JOIN invoices_services AS s2 ON s2.invoice_id = i2.id\n              WHERE i.address = i2.address\n                AND s.title = s2.title\n                AND i.date_invoice > i2.date_invoice\n                AND i.id != i2.id\n              ORDER BY i2.date_invoice DESC\n              LIMIT 1), 0) AS total\nFROM invoices AS i\n         JOIN invoices_services AS s ON s.invoice_id = i.id\nWHERE i.address = \"$address\"\nORDER BY i.date_invoice;",
           "refId": "A",
           "select": [
             [
@@ -956,7 +1031,7 @@
           ]
         }
       ],
-      "title": "Разница стоимости услуг",
+      "title": "Повышения и понижения стоимости услуг",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -966,7 +1041,7 @@
           }
         }
       ],
-      "type": "bargauge"
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -977,15 +1052,53 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd"
+            "mode": "thresholds",
+            "seriesBy": "max"
+          },
+          "custom": {
+            "axisLabel": "руб.",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
               }
             ]
           }
@@ -1000,17 +1113,14 @@
       },
       "id": 20,
       "options": {
-        "displayMode": "lcd",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "limit": 1,
-          "values": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "bottom"
         },
-        "showUnfilled": true
+        "tooltip": {
+          "mode": "multi"
+        }
       },
       "pluginVersion": "8.3.3",
       "targets": [
@@ -1023,7 +1133,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n    i.date_invoice AS \"time\",\n    s.title,\n    s.rate - (SELECT s2.rate\n               FROM invoices AS i2\n                        LEFT JOIN invoices_services AS s2 ON s2.invoice_id = i2.id\n               WHERE i.address = i2.address\n                       AND s.title = s2.title\n                       AND i.id != i2.id\n               ORDER BY i2.id DESC\n               LIMIT 1) AS rate\nFROM invoices AS i\n         JOIN invoices_services AS s ON s.invoice_id = i.id\nWHERE i.address = \"$address\"\n        AND i.id = (SELECT MAX(i2.id)\n                    FROM invoices AS i2\n                    WHERE i.address = i2.address)\nORDER BY i.date_invoice;",
+          "rawSql": "SELECT\n    i.date_invoice AS \"time\",\n    s.title,\n    s.rate - COALESCE((SELECT s2.rate\n              FROM invoices AS i2\n                  LEFT JOIN invoices_services AS s2 ON s2.invoice_id = i2.id\n              WHERE i.address = i2.address\n                AND s.title = s2.title\n                AND i.date_invoice > i2.date_invoice\n                AND i.id != i2.id\n              ORDER BY i2.date_invoice DESC\n              LIMIT 1), 0) AS rate\nFROM invoices AS i\n         JOIN invoices_services AS s ON s.invoice_id = i.id\nWHERE i.address = \"$address\"\nORDER BY i.date_invoice;",
           "refId": "A",
           "select": [
             [
@@ -1047,7 +1157,7 @@
           ]
         }
       ],
-      "title": "Разница тарифов услуг",
+      "title": "Повышения и понижения тарифов услуг",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -1057,7 +1167,7 @@
           }
         }
       ],
-      "type": "bargauge"
+      "type": "timeseries"
     },
     {
       "collapsed": false,
@@ -1842,9 +1952,9 @@
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "г. минск, ул. братская, д. 8, кв. 129",
-          "value": "г. минск, ул. братская, д. 8, кв. 129"
+          "selected": false,
+          "text": "",
+          "value": ""
         },
         "datasource": {
           "type": "mysql",
@@ -1874,6 +1984,6 @@
   "timezone": "",
   "title": "Жировки",
   "uid": "9mhdP2zRk",
-  "version": 6,
+  "version": 15,
   "weekStart": ""
 }
