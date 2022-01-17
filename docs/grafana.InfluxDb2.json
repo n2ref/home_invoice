@@ -1721,8 +1721,8 @@
       {
         "current": {
           "selected": true,
-          "text": "г. минск, ул. братская, д. 8",
-          "value": "г. минск, ул. братская, д. 8"
+          "text": "",
+          "value": ""
         },
         "datasource": {
           "type": "influxdb",
